@@ -1,2 +1,2 @@
-# KUKA-Youbot-RobotArm_Manipulation
+# Youbot_Group3_WS25
 
