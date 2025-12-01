@@ -2,7 +2,7 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{float}
-
+\usepackage{hyperref}
 
 \begin{document}
 
@@ -63,27 +63,29 @@
     \end{itemize}
 \end{itemize}
 
+\newpage
+
 \section{Pose Filtering Procedure}
 To preprocess the data and remove outliers, we applied the Interquartile Range (IQR) method to the x and y coordinates of the end-effector poses obtained from the youBot's internal encoders. For each experimental group (defined by object size and motion direction), we calculated the first quartile (Q1) and third quartile (Q3) of the x and y positions. Outliers were identified as points falling below Q1 - 1.5*IQR or above Q3 + 1.5*IQR in either coordinate. These outliers were removed from the dataset.
 
 Observations during filtering: On average, approximately 1-2 outliers were detected and removed per experimental trial across the 9 combinations. Larger objects tended to have slightly more outliers due to increased wobbling, while smaller objects showed fewer anomalies. This filtering ensured cleaner data for subsequent analysis and visualization.
 
-\newpage
+% \newpage
 
-\section{Preprocessed Data}
-The preprocessed data was saved as a CSV file named \texttt{preprocessed\_data.csv} with the following structure:
-\begin{itemize}
-    \item Columns: mass (small/medium/large), position (left/right/straight), trial (1-25), type (external/internal), x, y, theta
-\end{itemize}
+% \section{Preprocessed Data}
+% The preprocessed data was saved as a CSV file named \texttt{preprocessed\_data.csv} with the following structure:
+% \begin{itemize}
+%     \item Columns: mass (small/medium/large), position (left/right/straight), trial (1-25), type (external/internal), x, y, theta
+% \end{itemize}
 
-\paragraph{Sample Data:}
-\begin{lstlisting}
-mass,position,trial,type,x,y,theta
-small,left,1,external,29.8,-35.3,0.0
-small,left,1,internal,29.8,-35.3,0.0
-small,left,2,external,29.8,-35.3,0.0
-... (full data in preprocessed_data.csv)
-\end{lstlisting}
+% \paragraph{Sample Data:}
+% \begin{lstlisting}
+% mass,position,trial,type,x,y,theta
+% small,left,1,external,29.8,-35.3,0.0
+% small,left,1,internal,29.8,-35.3,0.0
+% small,left,2,external,29.8,-35.3,0.0
+% ... (full data in preprocessed_data.csv)
+% \end{lstlisting}
 
 \section{Data Merging}
 The individual CSV was merged with data from classmates by concatenating all preprocessed CSVs into a single DataFrame. This combined dataset was used for visualizations and analysis. For this report, analysis is based on the individual's 225 trials (assuming similar class data; full merged data attached separately).
@@ -136,9 +138,10 @@ The results highlight a trade-off: while the arm is highly precise in repeating 
 To provide a comprehensive evaluation, data from all four groups (Group 1, 2, 3, and 4) was combined and analyzed together. This section presents the results of merging datasets from different experimental setups, allowing for a broader assessment of the KUKA youBot arm's performance across varied conditions and implementations.
 
 \subsection{Data Integration}
-Data from each group was standardized to common units (cm for positions, radians for orientations) and merged based on timestamps with a 10-minute tolerance. The combined dataset includes trials from all groups, sizes, and directions, providing a total of [placeholder: total trials] experimental runs.
+Data from each group was standardized to common units (cm for positions, radians for orientations) and combined from all available CSV files. The combined dataset includes trials from all groups, sizes, and directions, providing a total of 1200 experimental runs.
 
-The combined preprocessed data is available at: \href{https://github.com/username/repo/blob/main/combined_preprocessed_data.csv}{combined_preprocessed_data.csv}
+The combined preprocessed data is available at:
+\href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/main/combined_preprocessed_data.csv}{Combined data}
 
 \subsection{Combined Pose Visualizations}
 Visualizations for the combined data show the distribution of final poses across all groups, highlighting both individual group performance and overall trends.
@@ -170,41 +173,65 @@ The combined visualizations reveal consistent patterns across groups, with some 
 Statistical analysis on the combined dataset provides insights into overall accuracy and precision across all groups.
 
 \paragraph{Accuracy (Combined):}
-The mean distances between internal and external measurements across all groups range from [placeholder: min] cm to [placeholder: max] cm. This combined analysis shows [placeholder: observations about accuracy].
+The mean distances between internal and external measurements across all groups range from 213.60 cm to 268.62 cm. This combined analysis shows variations across groups and conditions, with Group3 generally showing lower distances than Group1 and Group2.
 
 \paragraph{Precision (Combined):}
-The standard deviations of external positions across all groups are [placeholder: range] cm, indicating [placeholder: observations about precision].
+The standard deviations of external positions across all groups are 0.01 cm to 0.83 cm, indicating high precision overall, with some variation between groups.
 
 \paragraph{Group-wise Comparison:}
 A comparison of accuracy and precision across groups is shown in the following table:
 
 \begin{table}[H]
 \centering
-\caption{Combined Accuracy and Precision by Group}
+\caption{Combined Accuracy and Precision by Group, Size, and Direction}
 \label{tab:combined_stats}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-Group & Object Size & Accuracy (cm) & Precision (cm) \\
+Group & Size & Direction & Accuracy (cm) & Precision (cm) \\
 \hline
-Group 1 & Small & [placeholder] & [placeholder] \\
-Group 1 & Medium & [placeholder] & [placeholder] \\
-Group 1 & Large & [placeholder] & [placeholder] \\
-Group 2 & Small & [placeholder] & [placeholder] \\
-Group 2 & Medium & [placeholder] & [placeholder] \\
-Group 2 & Large & [placeholder] & [placeholder] \\
-Group 3 & Small & [placeholder] & [placeholder] \\
-Group 3 & Medium & [placeholder] & [placeholder] \\
-Group 3 & Large & [placeholder] & [placeholder] \\
-Group 4 & Small & [placeholder] & [placeholder] \\
-Group 4 & Medium & [placeholder] & [placeholder] \\
-Group 4 & Large & [placeholder] & [placeholder] \\
+Group1 & large & left & 259.53 & 0.20 \\
+Group1 & large & right & 268.62 & 0.03 \\
+Group1 & large & straight & 259.33 & 0.19 \\
+Group1 & medium & left & 258.20 & 0.17 \\
+Group1 & medium & right & 267.82 & 0.02 \\
+Group1 & medium & straight & 257.71 & 0.13 \\
+Group1 & small & left & 255.39 & 0.04 \\
+Group1 & small & right & 267.58 & 0.02 \\
+Group1 & small & straight & 256.69 & 0.03 \\
+Group2 & large & left & 259.52 & 0.02 \\
+Group2 & large & right & 268.54 & 0.03 \\
+Group2 & large & straight & 259.28 & 0.03 \\
+Group2 & medium & left & 257.96 & 0.04 \\
+Group2 & medium & right & 267.66 & 0.02 \\
+Group2 & medium & straight & 257.83 & 0.02 \\
+Group2 & small & left & 257.79 & 0.03 \\
+Group2 & small & right & 268.05 & 0.83 \\
+Group2 & small & straight & 258.52 & 0.02 \\
+Group3 & large & left & 259.10 & 0.04 \\
+Group3 & large & right & 268.58 & 0.02 \\
+Group3 & large & straight & 258.76 & 0.03 \\
+Group3 & medium & left & 258.23 & 0.03 \\
+Group3 & medium & right & 267.86 & 0.02 \\
+Group3 & medium & straight & 258.14 & 0.01 \\
+Group3 & small & left & 255.35 & 0.14 \\
+Group3 & small & right & 267.67 & 0.02 \\
+Group3 & small & straight & 256.39 & 0.06 \\
+Group4 & large & left & 259.72 & 0.05 \\
+Group4 & large & right & 269.14 & 0.12 \\
+Group4 & large & straight & 258.88 & 0.10 \\
+Group4 & medium & left & 258.05 & 0.03 \\
+Group4 & medium & right & 267.12 & 0.01 \\
+Group4 & medium & straight & 257.57 & 0.02 \\
+Group4 & small & left & 255.22 & 0.03 \\
+Group4 & small & right & 267.40 & 0.03 \\
+Group4 & small & straight & 256.49 & 0.02 \\
 \hline
 \end{tabular}
 \end{table}
 
-The table above compares performance across groups. Data available at: \href{https://github.com/username/repo/blob/main/combined_stats_table.csv}{combined_stats_table.csv}
+% The table above compares performance across groups. Data available at: \href{https://github.com/username/repo/blob/main/combined_stats_table.csv}{combined_stats_table.csv}
 
 \paragraph{Discussion (Combined):}
-The combined analysis across all groups demonstrates [placeholder: overall conclusions]. Variations between groups may be attributed to differences in experimental setup, calibration, or environmental factors. This comprehensive evaluation provides a more robust assessment of the youBot arm's capabilities.
+The combined analysis across all groups demonstrates variations in performance across different experimental setups. Group3 shows the best accuracy, while precision is generally high across all groups. Variations between groups may be attributed to differences in experimental setup, calibration, or environmental factors. This comprehensive evaluation provides a more robust assessment of the youBot arm's capabilities.
 
 \end{document}

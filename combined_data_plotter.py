@@ -32,66 +32,48 @@ def load_optitrack_combined():
                     folder = base_path / f"{size_key}_{dir_key}"
                 elif group_name == 'Group1':
                     folder = base_path / size_key / dir_key
-                elif group_name in ['Group3', 'Group4']:
+                elif group_name == 'Group3':
                     folder = base_path / size_key.capitalize() / dir_key.capitalize()
+                elif group_name == 'Group4':
+                    folder = base_path / size_key.capitalize() / dir_key.capitalize()
+                    # print(folder)
+                
                 else:
                     continue
 
                 if not folder.exists():
                     continue
 
-                # Different file patterns
-                if group_name == 'Group2':
-                    pattern = re.compile(r"G2 \w\w Take (\d{4}-\d{2}-\d{2}_\d{2}_\d{3})\.csv")
-                    file_glob = "G2 *.csv"
-                else:
-                    pattern = re.compile(r"Take (\d{4}-\d{2}-\d{2} \d{1,2}\.\d{2}\.\d{2} [AP]M)")
-                    file_glob = "Take *.csv"
-
-                for file in folder.glob(file_glob):
-                    m = pattern.search(file.name)
-                    if not m:
-                        continue
-
-                    if group_name == 'Group2':
-                        dt_str = m.group(1)
-                        date_part, time_part = dt_str.split('_', 1)
-                        time_parts = time_part.split('_')
-                        if len(time_parts) == 2:
-                            hour, min_sec = time_parts
-                            min = min_sec[:2]
-                            sec = min_sec[2:]
-                            dt_str = f"{date_part} {hour} {min} {sec}"
-                        else:
-                            dt_str = dt_str.replace('_', ' ')
-                        dt = datetime.strptime(dt_str, "%Y-%m-%d %H %M %S")
-                    else:
-                        dt = datetime.strptime(m.group(1), "%Y-%m-%d %I.%M.%S %p")
-
-                    df = pd.read_csv(file, skiprows=7)
-                    if len(df) < 5:
-                        continue
-                    last = df.iloc[-1]
-
-                    # Quaternion to yaw
+                for file in folder.glob("*.csv"):
                     try:
-                        qx = float(last["X"])
-                        qy = float(last["Y"])
-                        qz = float(last["Z"])
-                        qw = float(last["W"])
-                        yaw = np.arctan2(2*(qw*qz + qx*qy), 1 - 2*(qy**2 + qz**2))
-                    except:
-                        yaw = 0.0
+                        df = pd.read_csv(file, skiprows=7)
+                        if len(df) < 5:
+                            continue
+                        last = df.iloc[-1]
 
-                    data.append({
-                        "group": group_name,
-                        "size": size_key,
-                        "direction": dir_key,
-                        "datetime": dt,
-                        "x": float(last["X.1"]),
-                        "y": float(last["Y.1"]),
-                        "theta": yaw
-                    })
+                        # Quaternion to yaw
+                        try:
+                            qx = float(last["X"])
+                            qy = float(last["Y"])
+                            qz = float(last["Z"])
+                            qw = float(last["W"])
+                            yaw = np.arctan2(2*(qw*qz + qx*qy), 1 - 2*(qy**2 + qz**2))
+                        except:
+                            yaw = 0.0
+
+                        try:
+                            data.append({
+                                "group": group_name,
+                                "size": size_key,
+                                "direction": dir_key,
+                                "x": float(last["X.1"]),
+                                "y": float(last["Y.1"]),
+                                "theta": yaw
+                            })
+                        except:
+                            continue
+                    except:
+                        continue
     return pd.DataFrame(data)
 
 # ==================== LOAD YOUBOT COMBINED ====================
@@ -101,13 +83,15 @@ def load_youbot_combined():
         'Group1': ROOT / 'Group1' / 'youBot',
         'Group2': ROOT / 'Group2' / 'actuator',
         'Group3': ROOT / 'Group3',
-        'Group4': ROOT / 'Group4' / 'Group_4_YouBot_Data' / 'Group 4'
+        'Group4': ROOT / 'Group4' / 'Group_4_YouBot_Data'
     }
 
     for group_name, base_path in groups.items():
         if not base_path.exists():
             print(f"Skipping {group_name}: path not found")
             continue
+
+
 
         for size_key in ["small", "medium", "large"]:
             for dir_key in ["left", "right", "straight"]:
@@ -118,7 +102,9 @@ def load_youbot_combined():
                 elif group_name == 'Group3':
                     folder = base_path / f"{size_key}_{dir_key}" / "csv"
                 elif group_name == 'Group4':
-                    folder = base_path / size_key / dir_key / "csv"
+                    print(base_path)
+                    folder = base_path / 'Group 4' / f"{size_key}_{dir_key}" / "csv"
+                    print(folder)
                 else:
                     continue
 
@@ -126,38 +112,29 @@ def load_youbot_combined():
                     continue
 
                 for csv_file in folder.glob("*.csv"):
-                    stem = csv_file.stem
-                    # Parse datetime from filename
-                    time_match = re.search(r"(\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2})", stem)
-                    if not time_match:
-                        continue
-                    time_str = time_match.group(1)
                     try:
-                        dt = datetime.strptime(time_str, "%Y_%m_%d_%H_%M_%S")
-                    except:
-                        continue
+                        df = pd.read_csv(csv_file, header=None, names=["x","y","theta"])
+                        if df.empty:
+                            continue
+                        last = df.iloc[-1]
 
-                    df = pd.read_csv(csv_file, header=None, names=["x","y","theta"])
-                    if df.empty:
-                        continue
-                    last = df.iloc[-1]
-
-                    # Standardize units: convert to cm if not already
-                    x = float(last.x)
-                    y = float(last.y)
-                    if group_name != 'Group3':  # Group3 already in cm
+                        # Standardize units: convert to cm if not already
+                        x = float(last.x)
+                        y = float(last.y)
+                        # if group_name != 'Group3':  # Group3 already in cm
                         x *= 100
                         y *= 100
 
-                    data.append({
-                        "group": group_name,
-                        "size": size_key,
-                        "direction": dir_key,
-                        "datetime": dt,
-                        "x": x,
-                        "y": y,
-                        "theta": float(last.theta)
-                    })
+                        data.append({
+                            "group": group_name,
+                            "size": size_key,
+                            "direction": dir_key,
+                            "x": x,
+                            "y": y,
+                            "theta": float(last.theta)
+                        })
+                    except:
+                        continue
     return pd.DataFrame(data)
 
 # ==================== OUTLIER REMOVAL (IQR) ====================
@@ -204,7 +181,8 @@ print(f"YouBot trials: {len(youbot_df)}")
 opti_df['type'] = 'external'
 youbot_df['type'] = 'internal'
 matched = pd.concat([opti_df, youbot_df], ignore_index=True)
-print(f"Combined {len(matched)} trials across all groups\n")
+print(f"Combined {len(matched)} trials across all groups")
+print(f"Groups in data: {sorted(matched['group'].unique())}\n")
 
 # Skip outlier removal for combined
 matched_clean = matched
