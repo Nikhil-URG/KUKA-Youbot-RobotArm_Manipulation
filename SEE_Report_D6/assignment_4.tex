@@ -1,0 +1,156 @@
+\clearpage
+
+% Increase size (adjust \huge to \Huge or \fontsize{}{} if needed)
+\part{ Assignment 4: Camera Calibration Report}
+
+\setcounter{section}{0}
+
+\section{Setup}
+The calibration experiment was performed using a Logitech C920 Webcam mounted on top of a laptop. The camera’s autofocus was disabled to maintain consistent focus, and the resolution was set to 640x480 pixels. Uniform lighting was used throughout the experiment. The checkerboard used as the calibration target had 9x7 internal corners. The approximate distance between the camera and the checkerboard was 60 cm.  
+
+\subsection{Possible Pitfalls}
+Potential issues that were controlled include:
+\begin{itemize}
+    \item Maintaining uniform lighting to avoid reflections or shadows.
+    \item Ensuring the checkerboard was flat during image capture.
+    \item Avoiding motion blur by keeping the camera and checkerboard steady.
+    \item Ensuring autofocus remained disabled to prevent inconsistent focal lengths.
+\end{itemize}
+
+\section{Image Requirements and Capture}
+A total of 21 images were captured for calibration. All images were successfully processed; no images were rejected due to failed corner detection.  
+
+\subsection{Image Poses}
+The checkerboard was presented to the camera from a variety of positions and angles to ensure robust calibration:
+\begin{itemize}
+    \item Front-facing views
+    \item Tilted and angled views
+    \item Variations in distance and orientation
+\end{itemize}
+
+\section{Calibration Procedure Using OpenCV}
+The calibration process was performed using the \texttt{OpenCV} library in Python, which provides built-in functions for camera calibration and distortion correction. The following key functions were utilized:
+\begin{itemize}
+    \item \texttt{cv2.findChessboardCorners()} – to automatically detect the checkerboard corners in each calibration image.
+    \item \texttt{cv2.cornerSubPix()} – to refine corner positions for sub-pixel accuracy.
+    \item \texttt{cv2.calibrateCamera()} – to compute the intrinsic and extrinsic parameters of the camera.
+    \item \texttt{cv2.undistort()} – to apply the derived parameters and correct lens distortion in images.
+\end{itemize}
+
+These functions together implement a well-established calibration algorithm based on Zhang’s method, which minimizes the reprojection error between observed corner locations and their projections based on the estimated camera model.
+
+\section{Camera Parameters}
+
+\subsection{Intrinsic Parameters}
+The intrinsic parameters describe the internal characteristics of the camera, independent of its position or orientation. They define how 3D points in the camera’s coordinate frame are projected onto the 2D image plane.
+
+\subsubsection{Camera Matrix}
+The camera matrix, denoted by \(K\), encapsulates the focal lengths and the coordinates of the principal point (the image center). It is given by:
+
+\[
+K =
+\begin{bmatrix}
+812.3930499 & 0 & 361.22560634 \\
+0 & 811.74209128 & 220.12202879 \\
+0 & 0 & 1
+\end{bmatrix}
+\]
+
+\begin{itemize}
+    \item \textbf{Focal Lengths (\(f_x, f_y\)):}  
+    The focal lengths are \( f_x = 812.393 \) pixels and \( f_y = 811.742 \) pixels. These values act as scaling factors relating world coordinates to image coordinates along the x- and y-axes. Their similarity indicates an almost square pixel aspect ratio, implying minimal image scaling distortion.
+    
+    \item \textbf{Principal Point (\(c_x, c_y\)):}  
+    The principal point is located at \( c_x = 361.226 \) pixels and \( c_y = 220.122 \) pixels. This point represents the intersection of the camera’s optical axis with the image plane. Although it ideally lies at the geometric center of the image, small deviations are common due to sensor alignment or manufacturing tolerances.
+\end{itemize}
+
+
+\subsubsection{Distortion Coefficients}
+Real-world lenses introduce distortions that cause straight lines to appear curved, especially near the image edges. OpenCV models these imperfections using radial and tangential distortion coefficients. The distortion vector for this camera is:
+
+\[
+D =
+\begin{bmatrix}
+0.1898 & -1.3819 & -0.0165 & 0.0103 & 2.4409
+\end{bmatrix}
+\]
+
+\begin{itemize}
+    \item \textbf{Radial Distortion (\(k_1, k_2, k_3\)):}  
+    The radial distortion coefficients are \( k_1 = 0.18984919 \), \( k_2 = -1.38190614 \), and \( k_3 = 2.44092044 \). These terms describe barrel or pincushion distortion produced by the curvature of the lens. Positive values typically correspond to barrel distortion (outward bulging), while negative values indicate pincushion distortion (inward pinching).
+
+    \item \textbf{Tangential Distortion (\(p_1, p_2\)):}  
+    The tangential distortion parameters are \( p_1 = -0.01658026 \) and \( p_2 = 0.01031542 \). These coefficients model decentering effects caused when the lens and the image sensor are not perfectly aligned or parallel, producing slight asymmetric distortions.
+\end{itemize}
+
+Understanding and correcting these intrinsic properties ensures that straight lines in the real world appear straight in the image and that spatial measurements remain consistent across the image frame.
+
+\subsection{Extrinsic Parameters}
+The extrinsic parameters define the spatial relationship between the camera and the observed calibration target (the checkerboard). For each image, the calibration process estimates:
+\begin{itemize}
+    \item A rotation vector (\texttt{rvec}) – representing the orientation of the checkerboard relative to the camera.
+    
+\[
+\mathbf{r} =
+\begin{bmatrix}
+0.16577767 \\
+0.56661910 \\
+0.05690060
+\end{bmatrix}
+\]
+    
+    \item A translation vector (\texttt{tvec}) – representing the position (x, y, z displacement) of the checkerboard relative to the camera’s optical center.
+    
+\[
+\mathbf{t} =
+\begin{bmatrix}
+-4.12928475 \\
+-2.94756315 \\
+18.67842580
+\end{bmatrix}
+\]
+    
+\end{itemize}
+
+\section{Error Analysis}
+The quality of calibration was evaluated using the root-mean-square (RMS) reprojection error, which quantifies the average distance (in pixels) between the observed corner positions and the projected corner positions computed using the estimated camera parameters.
+
+\begin{itemize}
+    \item \textbf{Reprojection Error (RMS):} 0.577 pixels
+    \item \textbf{Discussion:} A reprojection error below 1 pixel indicates a highly accurate calibration. The low value here demonstrates that the estimated intrinsic and extrinsic parameters accurately model the camera’s geometry and lens behavior. This ensures that subsequent undistortion and 3D-to-2D mapping operations will yield precise results.
+\end{itemize}
+
+\section{Sample Images}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{sample_img_1.png}
+    \caption{image with corner detection}
+    \label{fig:original}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{sample_img_3.png}
+    \caption{image with corner detection}
+    \label{fig:original}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{original_image.png}
+    \caption{Original, distorted image. Notice the curvature of lines near the edges caused by lens distortion.}
+    \label{fig:original}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{undistorted.jpeg}
+    \caption{Undistorted image after applying OpenCV’s calibration parameters. The checkerboard lines now appear straight, demonstrating successful correction.}
+    \label{fig:undistorted}
+\end{figure}
+
+\section{Conclusion}
+The camera calibration experiment successfully determined both the intrinsic and extrinsic parameters of the Logitech C920 Webcam using OpenCV’s calibration functions. A set of 21 images of a 9x7 checkerboard pattern captured under uniform lighting yielded a reprojection error of 0.577 pixels, indicating a highly accurate calibration.  
+
+The intrinsic parameters describe the internal geometry of the camera and lens, while the extrinsic parameters define the camera’s position and orientation relative to the observed scene. Together, these enable precise correction of lens distortion and accurate projection between 3D world coordinates and 2D image coordinates. The calibrated camera can now be reliably used for optical tracking, 3D reconstruction, or other computer vision tasks requiring geometric accuracy.

@@ -1,0 +1,939 @@
+% ASSIGNMENT 3
+% ============================================================
+\clearpage
+\part{Assignment 3: Statistical Evaluation of Robot Motion}
+\setcounter{section}{0}
+
+\section{Introduction}
+
+This report is an extension of the analysis from last Assignment, here we have performed a statistical evaluation of the robot’s motion behavior for the three motion types: straight, left arc, and right arc. The primary goal is to characterize the observed motion in terms of statistical parameters and check whether the end poses of the robot follow a Gaussian distribution. 
+
+The assignment includes data preprocessing, Gaussian fitting, outlier removal, Principal Component Analysis (PCA), and comparison of uncertainties between manual and encoder-based measurements. All analyses are performed on the combined dataset from all groups.
+
+\section{Mean and Norm between manual end poses and final reading of encoder data}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{manual_vs_enocder_data.jpeg}
+    \caption{Comparison of manual end poses and encoder data.}
+    \label{fig:manualvsencoder}
+\end{figure}
+
+
+\subsection{Accuracy Calculation (L2 Norm)}
+
+
+\begin{itemize}
+    \item Mean of the manual poses of forward: [ -0.04, 46.89 ] cm
+    \item Mean of the end poses from encoder data of forward: [ 0.45, 43.83 ] cm
+    \item Accuracy Error (L2 Norm) for forward: 3.10 cm
+    \item Mean of the manual poses of left: [ -22.38, 31.93 ] cm
+    \item Mean of the end poses from encoder data of left: [ -15.08, 32.71 ] cm
+    \item Accuracy Error (L2 Norm) for left: 7.35 cm
+    \item Mean of the manual poses of right: [ 22.12, 32.45 ] cm
+    \item Mean of the end poses from encoder data of right: [ 15.16, 32.62 ] cm
+    \item Accuracy Error (L2 Norm) for right: 6.96 cm
+\end{itemize}
+
+
+
+
+
+
+\newpage
+
+\section{Data Pre-processing and Outlier Detection}
+
+Before performing statistical analysis, the data was preprocessed to remove outliers using Chebyshev’s Theorem with a threshold of $2\sigma$. Outliers were identified and excluded to ensure that the resulting distribution reflects the true spread of the robot’s motion.
+
+\subsection{Procedure}
+
+\begin{enumerate}
+    \item Combined data from all groups for each motion type (straight, left arc, right arc).
+    \item Calculated the mean ($\mu$) and standard deviation ($\sigma$) for both X and Y coordinates separately within each motion type (left, forward, right).
+    \item Applied Chebyshev’s theorem:
+    \[
+    P(|x - \mu| \geq k\sigma) \leq \frac{1}{k^2}
+    \]
+    with $k = 2$ to remove data points beyond $2\sigma$.
+    \item Verified results visually using scatter plots before and after outlier removal.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{data_boxplots_X.jpeg}
+    \caption{Visualization of data using box plots with indication of outliers for X.}
+    \label{fig:outlier_removal_X}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{data_boxplots_Y.jpeg}
+    \caption{Visualization of data using box plots with indication of outliers for Y.}
+    \label{fig:outlier_removal_Y}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{data_boxplots_orientation.jpeg}
+    \caption{Visualization of data using box plots with indication of outliers for Orientation.}
+    \label{fig:outlier_removal_orientation}
+\end{figure}
+
+
+\section{Gaussian Fitting and Distribution Analysis}
+
+To model the spread of the robot’s stop positions, one-dimensional Gaussian distributions were fitted separately for the X and Y coordinates of each motion type.
+
+\subsection{1D Gaussian Fit (X and Y Separately)}
+
+Each coordinate axis (X, Y) was analyzed individually to estimate the Gaussian parameters:
+
+\[
+f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right)
+\]
+
+The fitted mean and standard deviation parameters are summarized below:
+
+\begin{table}[h!]
+\centering
+\caption{Mean Vector and Covariance Matrix for Each Direction}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Direction} & \textbf{Mean Vector $[\mu_x, \mu_y]$ (cm)} & \textbf{Covariance Matrix $\Sigma$ (cm$^2$)} \\
+\hline
+Forward & [46.82, -0.04] & 
+$\begin{bmatrix} 1.03 & -0.02 \\ -0.02 & 0.38 \end{bmatrix}$ \\
+\hline
+Left & [31.75, -22.68] & 
+$\begin{bmatrix} 3.15 & 4.55 \\ 4.55 & 8.95 \end{bmatrix}$ \\
+\hline
+Right & [32.28, 22.45] & 
+$\begin{bmatrix} 4.24 & -5.30 \\ -5.30 & 10.04 \end{bmatrix}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{histograms_forward.png}
+    \caption{Gaussian fit for X and Y distributions of forward motion.(edits: added grid lines) }
+    \label{fig:gaussian_fit1}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{histograms_left.png}
+    \caption{Gaussian fit for X and Y distributions of left arc motion.(edits: added grid lines)}
+    \label{fig:gaussian_fit2}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{histograms_right.png}
+    \caption{Gaussian fit for X and Y distributions of right arc motion.(edits: added grid lines)}
+    \label{fig:gaussian_fit3}
+\end{figure}
+
+
+
+\subsection{Evaluation of Gaussian Fit}
+
+The quality of the Gaussian fit was assessed visually by comparing the histograms of the observed data with the fitted Gaussian probability density functions for each motion type (Figure~\ref{fig:gaussian_fit1}, ~\ref{fig:gaussian_fit2}, ~\ref{fig:gaussian_fit3}).
+
+For the forward motion, both the X and Y distributions show a close alignment with the Gaussian curve, indicating that the positional spread of the robot’s stopping points is approximately normal.
+For the left and right arc motions, the fits deviate slightly from the ideal Gaussian shape particularly in the Y-coordinate distributions suggesting mild skewness or multimodality, likely caused by systematic turning behavior or wheel slippage during curved motion.
+
+A qualitative assessment indicates that while the Gaussian model captures the general spread of data, some deviations remain at the distribution tails. Therefore, the Gaussian assumption is acceptable for approximate uncertainty modeling but may not perfectly represent all motion types.
+
+
+
+
+\subsection{Chi-Square Goodness-of-Fit Test}
+
+To formally "judge if the data is truly Gaussian," a Chi-Square Goodness-of-Fit test was performed on the X and Y coordinates for each of the three motion directions. The null hypothesis ($H_0$) for this test is that the data is normally distributed. A significance level of $\alpha = 0.05$ was used.
+
+The results of these tests are summarized in Table \ref{tab:stat_results}.
+
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Direction} & \textbf{Statistic} & \textbf{Value} & \textbf{Conclusion} \\
+\midrule
+
+\multicolumn{4}{l}{\textbf{Left Motion}} \\
+\midrule
+X-Data & Mean ($\mu$) [cm] & 31.75 & \multirow{3}{*}{\textbf{Reject $H_0$}} \\
+       & Variance ($\sigma^2$) [cm$^2$] & 3.15 &  \\
+       & $\chi^2$, p-value & 54.85, 0.0001 &  \\
+\addlinespace
+
+Y-Data & Mean ($\mu$) [cm] & -22.68 & \multirow{3}{*}{\textbf{Reject $H_0$}} \\
+       & Variance ($\sigma^2$) [cm$^2$] & 8.95 & \\
+       & $\chi^2$, p-value & 140.90, 0.0001 & \\
+\midrule
+
+\multicolumn{4}{l}{\textbf{Forward Motion}} \\
+\midrule
+X-Data & Mean ($\mu$) [cm] & 46.82 & \multirow{3}{*}{Fail to Reject $H_0$} \\
+       & Variance ($\sigma^2$) [cm$^2$] & 1.03 & \\
+       & $\chi^2$, p-value & 17.83, 0.2146 & \\
+\addlinespace
+
+Y-Data & Mean ($\mu$) [cm] & -0.04 & \multirow{3}{*}{Fail to Reject $H_0$} \\
+       & Variance ($\sigma^2$) [cm$^2$] & 0.38 & \\
+       & $\chi^2$, p-value & 21.52, 0.0890 & \\
+\midrule
+
+\multicolumn{4}{l}{\textbf{Right Motion}} \\
+\midrule
+X-Data & Mean ($\mu$) [cm] & 32.28 & \multirow{3}{*}{\textbf{Reject $H_0$}} \\
+       & Variance ($\sigma^2$) [cm$^2$] & 4.24 & \\
+       & $\chi^2$, p-value & 41.69, 0.0001 & \\
+\addlinespace
+
+Y-Data & Mean ($\mu$) [cm] & 22.45 & \multirow{3}{*}{\textbf{Reject $H_0$}} \\
+       & Variance ($\sigma^2$) [cm$^2$] & 10.04 & \\
+       & $\chi^2$, p-value & 118.01, 0.0001 & \\
+\bottomrule
+\end{tabular}
+\caption{Statistical Analysis of End-Pose Data (Vertical Layout)}
+\label{tab:stat_results_vertical}
+\end{table}
+
+The Chi-Squ
+are test results provide a formal judgment on the distribution of the data.
+
+\begin{itemize}
+    \item \textbf{Forward Motion:} Both the X-Data (p=0.2146) and Y-Data (p=0.0890) failed to reject the null hypothesis. Their p-values are significantly greater than $\alpha=0.05$, which suggests that the data for the straight-line motion can be reasonably modeled as a Gaussian distribution. This indicates a well-behaved, symmetric spread of end-poses with no significant outliers or skew.
+
+    \item Left and Right Motions: In contrast, all data for the arc motions (\textit{Left X, Left Y, Right X, Right Y}) rejected the null hypothesis with p-values less than 0.0001. This is a strong statistical indication that the end-pose data for these motions is not normally distributed.
+
+    \item The non-Gaussian behavior of the \textit{Left} and \textit{Right} motions is likely caused by the presence of significant outliers, as visually identified in the box plots. The turning motion of the robot may induce more wheel slip or unpredictable behavior compared to the simple forward motion, leading to a skewed and non-normal distribution of errors. The \textit{Forward} motion, being the simplest, produced a "cleaner" and more statistically normal dataset.
+\end{itemize}
+
+
+
+
+\section{Principal Component Analysis (PCA)}
+
+PCA was performed to identify the principal axes of variance in the end positions and to visualize uncertainty ellipses representing the confidence regions for each motion type.
+
+\subsection{PCA Methodology}
+
+\begin{enumerate}
+    \item Centered the data by subtracting the mean position.
+    \item Computed the covariance matrix $\Sigma$.
+    \item Extracted eigenvalues and eigenvectors of $\Sigma$ to determine the principal components.
+    \item Plotted uncertainty ellipses corresponding to $1\sigma$, $2\sigma$ and $3\sigma$ levels.
+\end{enumerate}
+
+
+\begin{table}[h!]
+\centering
+\caption{PCA Results for Each Direction}
+\begin{tabular}{|c|c|p{4cm}|p{6cm}|}
+\hline
+Direction & PCA Eigenvalues & PCA Eigenvectors \\
+\hline
+Forward & [0.3286, 1.1204] & 
+v1=[0.0188, -0.9998] \newline v2=[-0.9998, -0.0188] \\
+\hline
+Right & [1.4567, 2.2825] & 
+v1=[-0.8715, 0.4904] \newline v2=[0.4904, 0.8715] \\
+\hline
+Left & [1.0078, 1.2392] & 
+v1=[-0.9106, -0.4133] \newline v2=[-0.4133, 0.9106] \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{pca_ellipses_all.jpeg}
+    \caption{PCA result showing data points and uncertainty ellipses for each motion type.}
+    \label{fig:pca_ellipses}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{pose_distribution_forward.jpeg}
+    \caption{3D distribution of forward stop poses with mean stop pose indicated (red star) }
+    \label{fig:pca_ellipses}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{pose_distribution_right.jpeg}
+    \caption{3D distribution of right stop poses with mean stop pose indicated (red star)}
+    \label{fig:pca_ellipses}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{pose_distribution_left.jpeg}
+    \caption{3D distribution of left stop poses with mean stop pose indicated (red star)}
+    \label{fig:pca_ellipses}
+\end{figure}
+
+\subsection{Comparison of Measurement vs. Statistical Uncertainty}
+
+This task compares the \textit{estimated} precision of our manual measurement system (from Assignment 1) with the \textit{observed} statistical precision of the robot's motion (from Assignment 3). The `forward` motion data is used for this comparison as it was found to be the most normally distributed.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of Estimated vs. Observed Uncertainty}
+\label{tab:uncertainty}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Uncertainty Type} & \textbf{Value (X-axis)} & \textbf{Value (Y-axis)} \\
+\midrule
+Estimated Measurement Uncertainty & $\pm 0.36$ cm & $\pm 0.36$ cm \\ 
+\addlinespace
+Observed Statistical Uncertainty ($\sigma$) & $\pm 1.01$ cm & $\pm 0.62$ cm \\
+(From Table \ref{tab:stat_results}, $\sigma = \sqrt{\text{Variance}}$) & ($\sigma = \sqrt{1.03}$) & ($\sigma = \sqrt{0.38}$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+As shown in Table \ref{tab:uncertainty}, the Observed Statistical Uncertainty is significantly larger than the Estimated Measurement Uncertainty. 
+
+The observed spread in the data is not due to characteristic of the robot's own low precision.
+
+
+\section{Conclusion}
+
+This statistical analysis provides a quantitative understanding of the robot’s motion uncertainty. Outlier removal and Gaussian fitting helped model the natural spread of motion, while PCA identified principal directions of variability. The comparison between manual and encoder-based data reveals how sensor-based predictions vary with physical observations, providing valuable insight for improving robot calibration and motion control.
+
+
+
+% START: Switch to full page width (one column) for the longtable
+\onecolumn 
+
+\begin{longtable}{| S[table-format=2.2] | S[table-format=-2.2] | S[table-format=-2.2] | l |}
+\caption{Manual Measurement Data (edit: added units) } \label{tab:com_data} \\
+\hline
+\textbf{x [cm]} & \textbf{y [cm]} & \textbf{Orientation [deg]} & \textbf{Direction} \\\hline
+\endhead
+\hline
+\endfoot
+47.03 & 0.3 & 0 & forward \\
+\hline
+45.87 & 0.25 & -0.59 & forward \\
+\hline
+45.54 & 0.25 & -2.36 & forward \\
+\hline
+47.01 & 0.25 & -1.18 & forward \\
+\hline
+45.67 & 0.4 & -1.19 & forward \\
+\hline
+45.94 & -0.25 & -1.18 & forward \\
+\hline
+47.61 & -0.35 & -0.59 & forward \\
+\hline
+47.5 & -0.5 & 0 & forward \\
+\hline
+47.25 & -0.4 & 0.6 & forward \\
+\hline
+46.52 & -0.2 & -0.6 & forward \\
+\hline
+46.71 & 0.25 & -1.18 & forward \\
+\hline
+48.88 & -0.55 & 1.21 & forward \\
+\hline
+48.61 & -0.55 & 1.77 & forward \\
+\hline
+46.73 & 0.1 & 0 & forward \\
+\hline
+46.5 & -0.4 & -0.61 & forward \\
+\hline
+46.63 & 0.85 & 0 & forward \\
+\hline
+45.93 & -0.5 & 0.6 & forward \\
+\hline
+46.84 & -0.5 & 1.19 & forward \\
+\hline
+45.5 & -0.65 & 1.21 & forward \\
+\hline
+47.81 & 0.3 & 0 & forward \\
+\hline
+46.32 & 0.7 & 0.58 & forward \\
+\hline
+48.14 & -0.55 & 1.77 & forward \\
+\hline
+48.01 & -0.35 & -0.59 & forward \\
+\hline
+46.67 & 0.25 & -2.36 & forward \\
+\hline
+47.06 & 0.3 & 0 & forward \\
+\hline
+31.45 & -22.75 & -62.1 & left \\
+\hline
+31.65 & -23.6 & -62.59 & left \\
+\hline
+31.85 & -23.65 & -64.29 & left \\
+\hline
+31.2 & -22.8 & -55.98 & left \\
+\hline
+31.05 & -23 & -56.65 & left \\
+\hline
+31.9 & -23.4 & -56.98 & left \\
+\hline
+31.2 & -24.5 & -58.63 & left \\
+\hline
+31.85 & -23.25 & -57.15 & left \\
+\hline
+31.7 & -23.1 & -55.98 & left \\
+\hline
+31.95 & -23.2 & -57.3 & left \\
+\hline
+32.2 & -23.9 & -56.98 & left \\
+\hline
+32.2 & -23.65 & -60.18 & left \\
+\hline
+32.3 & -23.65 & -56.48 & left \\
+\hline
+32.35 & -23.75 & -62.57 & left \\
+\hline
+32.1 & -24.8 & -58.63 & left \\
+\hline
+32 & -24.35 & -58.74 & left \\
+\hline
+31.75 & -24.1 & -58.31 & left \\
+\hline
+31.7 & -24.15 & -58.12 & left \\
+\hline
+32.55 & -23.65 & -56.8 & left \\
+\hline
+32.1 & -23.75 & -56.48 & left \\
+\hline
+32.2 & -25.4 & -58.63 & left \\
+\hline
+32.2 & -23.65 & -60.18 & left \\
+\hline
+33.2 & -23.95 & -56.14 & left \\
+\hline
+31.85 & -24.25 & -57.8 & left \\
+\hline
+32 & -23 & -55.3 & left \\
+\hline
+32.65 & 25.15 & 62.61 & right \\
+\hline
+31.9 & 23.35 & 56.48 & right \\
+\hline
+31.6 & 22.3 & 55.98 & right \\
+\hline
+31 & 23.7 & 56.98 & right \\
+\hline
+31.6 & 23.4 & 56.98 & right \\
+\hline
+31.95 & 22.4 & 55.65 & right \\
+\hline
+31.7 & 23.35 & 57.48 & right \\
+\hline
+31.35 & 23.3 & 56.31 & right \\
+\hline
+31.7 & 23.2 & 59.04 & right \\
+\hline
+32.3 & 27.15 & 60 & right \\
+\hline
+32 & 23.95 & 66.1 & right \\
+\hline
+33.25 & 24 & 56.31 & right \\
+\hline
+32.6 & 24.6 & 57.62 & right \\
+\hline
+28.7 & 23.95 & 57.8 & right \\
+\hline
+31.65 & 22.9 & 56.31 & right \\
+\hline
+32.2 & 23.65 & 56.48 & right \\
+\hline
+31.65 & 23.1 & 58.31 & right \\
+\hline
+32.7 & 23.55 & 56.48 & right \\
+\hline
+32.7 & 23.55 & 56.48 & right \\
+\hline
+32.15 & 24.45 & 59.44 & right \\
+\hline
+32.45 & 23.55 & 56.8 & right \\
+\hline
+32.25 & 25.35 & 57.53 & right \\
+\hline
+31.6 & 24.7 & 58.63 & right \\
+\hline
+31.85 & 24.9 & 61.66 & right \\
+\hline
+32.4 & 23.8 & 57.62 & right \\
+\hline
+46 & 0.8 & 0 & forward \\
+\hline
+48.2 & -0.09 & 1.19 & forward \\
+\hline
+47.69 & 1.24 & -6.54 & forward \\
+\hline
+47.5 & -0.36 & -1.18 & forward \\
+\hline
+47.05 & 1.02 & -0.62 & forward \\
+\hline
+45.65 & 0.33 & 0.6 & forward \\
+\hline
+46.95 & 0.22 & -0.6 & forward \\
+\hline
+46.15 & 0.28 & 1.81 & forward \\
+\hline
+46.85 & 0.02 & -0.6 & forward \\
+\hline
+47.85 & 0.02 & -0.6 & forward \\
+\hline
+47.95 & -0.07 & 0.59 & forward \\
+\hline
+47.5 & -0.11 & -1.17 & forward \\
+\hline
+47.85 & 0.13 & 0.58 & forward \\
+\hline
+46.71 & -0.97 & -2.34 & forward \\
+\hline
+45.4 & -0.66 & -1.18 & forward \\
+\hline
+46.75 & 0.48 & 0.6 & forward \\
+\hline
+46.6 & -0.1 & 0 & forward \\
+\hline
+45.6 & -1.31 & -1.17 & forward \\
+\hline
+45.5 & -1.1 & 0 & forward \\
+\hline
+47.65 & -0.79 & -1.77 & forward \\
+\hline
+45 & -1.21 & -1.19 & forward \\
+\hline
+47.85 & 0.28 & 1.81 & forward \\
+\hline
+47.75 & -0.17 & 0.58 & forward \\
+\hline
+46.31 & -0.37 & -2.34 & forward \\
+\hline
+47.65 & -0.11 & -1.55 & forward \\
+\hline
+35.72 & -16.36 & -54.81 & left \\
+\hline
+34.26 & -16.23 & -44.27 & left \\
+\hline
+35.42 & -16.76 & -54.81 & left \\
+\hline
+35.11 & -18.96 & -58.63 & left \\
+\hline
+34.57 & -17.63 & -56.8 & left \\
+\hline
+36.73 & -19.58 & -58.31 & left \\
+\hline
+35.59 & -17.1 & -54.96 & left \\
+\hline
+34.72 & -16.66 & -54.81 & left \\
+\hline
+35.81 & -16.84 & -55.15 & left \\
+\hline
+35.14 & -16.35 & -53.49 & left \\
+\hline
+35.81 & -16.17 & -56.14 & left \\
+\hline
+34.76 & -16.32 & -54.67 & left \\
+\hline
+32.55 & -17.49 & -45.36 & left \\
+\hline
+34.26 & -14.67 & -39.35 & left \\
+\hline
+33.62 & -15.73 & -43.2 & left \\
+\hline
+33.79 & -17 & -46.41 & left \\
+\hline
+34.44 & -16.8 & -55.01 & left \\
+\hline
+34.53 & -16.23 & -53.84 & left \\
+\hline
+34.51 & -16.3 & -54.19 & left \\
+\hline
+34.04 & -17.49 & -52.36 & left \\
+\hline
+35.24 & -18.23 & -55.98 & left \\
+\hline
+34.15 & -17.74 & -55.11 & left \\
+\hline
+35.19 & -17.95 & -56.48 & left \\
+\hline
+35.37 & -17.58 & -55.3 & left \\
+\hline
+35.42 & -17.31 & -52.67 & left \\
+\hline
+35.61 & 15.08 & 50.5 & right \\
+\hline
+36.69 & 17.6 & 54.96 & right \\
+\hline
+34.88 & 15.28 & 51.81 & right \\
+\hline
+35.69 & 17.2 & 54.96 & right \\
+\hline
+34.84 & 15.66 & 51.34 & right \\
+\hline
+35.2 & 16.24 & 53.01 & right \\
+\hline
+35.44 & 16.95 & 53.49 & right \\
+\hline
+36.16 & 16.42 & 54.67 & right \\
+\hline
+35.62 & 15.33 & 51.71 & right \\
+\hline
+35.3 & 14.95 & 50.88 & right \\
+\hline
+35.25 & 15.42 & 52.54 & right \\
+\hline
+36.24 & 17.05 & 53.49 & right \\
+\hline
+35.67 & 15.17 & 54.75 & right \\
+\hline
+34.48 & 17.71 & 45.73 & right \\
+\hline
+33.57 & 20.2 & 35.39 & right \\
+\hline
+37.13 & 18.38 & 58.31 & right \\
+\hline
+34.44 & 16.06 & 51.34 & right \\
+\hline
+35.24 & 17.8 & 55.01 & right \\
+\hline
+35.94 & 15.92 & 51.91 & right \\
+\hline
+34.43 & 16.19 & 52.28 & right \\
+\hline
+35.68 & 16.28 & 51.81 & right \\
+\hline
+36.34 & 17.06 & 56.98 & right \\
+\hline
+35.37 & 15.83 & 56.8 & right \\
+\hline
+35.7 & 16.04 & 53.01 & right \\
+\hline
+35.34 & 16.4 & 55.01 & right \\
+\hline
+30.1 & -26.1 & -40.93 & left \\
+\hline
+30.05 & -26.1 & -40.98 & left \\
+\hline
+31.85 & -22.55 & -35.3 & left \\
+\hline
+31.6 & -24.85 & -38.18 & left \\
+\hline
+31.65 & -24.95 & -38.25 & left \\
+\hline
+31.15 & -23.95 & -37.56 & left \\
+\hline
+31.05 & -25.9 & -39.83 & left \\
+\hline
+31 & -23.6 & -37.28 & left \\
+\hline
+31.3 & -23.2 & -36.55 & left \\
+\hline
+32.2 & -24.4 & -37.15 & left \\
+\hline
+31.45 & -25.55 & -39.09 & left \\
+\hline
+30.65 & -25.65 & -39.92 & left \\
+\hline
+30.85 & -24.35 & -38.28 & left \\
+\hline
+30.8 & -24.4 & -38.39 & left \\
+\hline
+30.6 & -25.6 & -39.92 & left \\
+\hline
+31.1 & -24.9 & -38.68 & left \\
+\hline
+31.15 & -25.1 & -38.86 & left \\
+\hline
+30.65 & -22.55 & -36.34 & left \\
+\hline
+31.45 & -25.35 & -38.87 & left \\
+\hline
+30.5 & -24.9 & -39.23 & left \\
+\hline
+31.25 & -22.25 & -35.45 & left \\
+\hline
+30.55 & -22.45 & -36.31 & left \\
+\hline
+30.5 & -24.1 & -38.31 & left \\
+\hline
+30.5 & -23.2 & -37.26 & left \\
+\hline
+31.8 & -25 & -38.17 & left \\
+\hline
+48.2 & -0.65 & -0.77 & forward \\
+\hline
+46.2 & -0.2 & -0.25 & forward \\
+\hline
+47.95 & -0.8 & -0.96 & forward \\
+\hline
+47.05 & -1.85 & -2.25 & forward \\
+\hline
+47.4 & 0.85 & 1.03 & forward \\
+\hline
+48.8 & 0.9 & 1.06 & forward \\
+\hline
+49.05 & -0.6 & -0.7 & forward \\
+\hline
+47.95 & -0.6 & -0.72 & forward \\
+\hline
+48.05 & 0.65 & 0.78 & forward \\
+\hline
+47.6 & 1.95 & 2.35 & forward \\
+\hline
+48.15 & 0.2 & 0.24 & forward \\
+\hline
+48.3 & 0.15 & 0.18 & forward \\
+\hline
+49.65 & -0.85 & -0.98 & forward \\
+\hline
+49.2 & -0.35 & -0.41 & forward \\
+\hline
+48.6 & 0.05 & 0.06 & forward \\
+\hline
+46.95 & 0.1 & 0.12 & forward \\
+\hline
+48.4 & 0.2 & 0.24 & forward \\
+\hline
+47.6 & -0.95 & -1.14 & forward \\
+\hline
+47.3 & 0.2 & 0.24 & forward \\
+\hline
+46.8 & 0 & 0 & forward \\
+\hline
+46 & -1.7 & -2.12 & forward \\
+\hline
+48.4 & -0.5 & -0.59 & forward \\
+\hline
+48.45 & -0.6 & -0.71 & forward \\
+\hline
+47.5 & -0.85 & -1.03 & forward \\
+\hline
+47.35 & -0.55 & -0.67 & forward \\
+\hline
+32.3 & 23.1 & 35.57 & right \\
+\hline
+33.8 & 24.75 & 36.21 & right \\
+\hline
+31.75 & 21.8 & 34.47 & right \\
+\hline
+32.9 & 24.45 & 36.62 & right \\
+\hline
+32.25 & 22.8 & 35.26 & right \\
+\hline
+33.35 & 23.45 & 35.11 & right \\
+\hline
+33.2 & 24.35 & 36.26 & right \\
+\hline
+32.85 & 24.25 & 36.43 & right \\
+\hline
+32.55 & 22.85 & 35.07 & right \\
+\hline
+32.3 & 22.4 & 34.74 & right \\
+\hline
+33 & 23.7 & 35.69 & right \\
+\hline
+33.05 & 21.7 & 33.29 & right \\
+\hline
+33.3 & 22.85 & 34.46 & right \\
+\hline
+32.4 & 26 & 38.75 & right \\
+\hline
+31.95 & 24.65 & 37.65 & right \\
+\hline
+33.1 & 24.5 & 36.51 & right \\
+\hline
+32.7 & 24.3 & 36.62 & right \\
+\hline
+32.55 & 22.95 & 35.19 & right \\
+\hline
+32.5 & 21.95 & 34.03 & right \\
+\hline
+32.45 & 24.35 & 36.88 & right \\
+\hline
+32.8 & 23.8 & 35.97 & right \\
+\hline
+32.1 & 22.75 & 35.33 & right \\
+\hline
+33.3 & 22.65 & 34.22 & right \\
+\hline
+32.55 & 22.8 & 35.01 & right \\
+\hline
+33.35 & 22.7 & 34.24 & right \\
+\hline
+46.05 & 0 & 0 & forward \\
+\hline
+46.35 & -0.85 & -2.1 & forward \\
+\hline
+46.55 & 1.225 & 3.01 & forward \\
+\hline
+46.115 & 1.55 & 3.85 & forward \\
+\hline
+45.9 & 1.2 & 3 & forward \\
+\hline
+45.05 & -1.05 & -2.67 & forward \\
+\hline
+46.625 & -0.65 & -1.6 & forward \\
+\hline
+46.4 & 0 & 0 & forward \\
+\hline
+46.125 & 0.2 & 0.5 & forward \\
+\hline
+46 & -1.3 & -3.24 & forward \\
+\hline
+46 & 0.625 & 1.56 & forward \\
+\hline
+45.99 & 0.625 & 1.56 & forward \\
+\hline
+46.05 & -0.375 & -0.93 & forward \\
+\hline
+46.1 & 1.375 & 3.42 & forward \\
+\hline
+45.36 & 0.575 & 1.45 & forward \\
+\hline
+45.335 & 1.125 & 2.84 & forward \\
+\hline
+45.8 & -1.025 & -2.56 & forward \\
+\hline
+46.2 & 0.8 & 1.98 & forward \\
+\hline
+45.625 & 1.625 & 4.08 & forward \\
+\hline
+45.175 & -0.3 & -0.76 & forward \\
+\hline
+45.275 & 0.55 & 1.39 & forward \\
+\hline
+45.35 & 0.55 & 1.39 & forward \\
+\hline
+45.35 & -0.15 & -0.38 & forward \\
+\hline
+46.7 & 0.05 & 0.12 & forward \\
+\hline
+45.65 & -0.525 & -1.32 & forward \\
+\hline
+46.6 & 0.15 & 0.37 & forward \\
+\hline
+30.25 & -23.5 & -75.68 & left \\
+\hline
+29.65 & -24.975 & -80.22 & left \\
+\hline
+30.15 & -24.425 & -78.02 & left \\
+\hline
+30.675 & -23.75 & -75.5 & left \\
+\hline
+29.175 & -24.375 & -79.76 & left \\
+\hline
+29.475 & -24.125 & -78.6 & left \\
+\hline
+29.7 & -24 & -77.88 & left \\
+\hline
+29.175 & -24.4 & -79.81 & left \\
+\hline
+29.575 & -24.1 & -78.35 & left \\
+\hline
+30.225 & -24.625 & -78.34 & left \\
+\hline
+29.475 & -25.05 & -80.72 & left \\
+\hline
+29.95 & -24.75 & -79.14 & left \\
+\hline
+30.225 & -25.275 & -79.81 & left \\
+\hline
+30.375 & -24 & -76.63 & left \\
+\hline
+30.35 & -24 & -76.67 & left \\
+\hline
+30.355 & -24 & -76.66 & left \\
+\hline
+29.5 & -24.9 & -80.33 & left \\
+\hline
+30.38 & -24 & -76.62 & left \\
+\hline
+29.925 & -24.45 & -78.5 & left \\
+\hline
+30.475 & -22.75 & -73.48 & left \\
+\hline
+30.325 & -24 & -76.72 & left \\
+\hline
+30.4 & -23.95 & -76.46 & left \\
+\hline
+30.1 & -23.75 & -76.55 & left \\
+\hline
+30.45 & -25.075 & -78.94 & left \\
+\hline
+29.85 & -24.575 & -78.93 & left \\
+\hline
+29.45 & -24.125 & -78.65 & left \\
+\hline
+29.675 & 24.975 & 80.17 & right \\
+\hline
+30.275 & 23.75 & 76.23 & right \\
+\hline
+30.05 & 24 & 77.23 & right \\
+\hline
+29.55 & 23.85 & 77.81 & right \\
+\hline
+29.55 & 23.55 & 77.11 & right \\
+\hline
+30.05 & 24.6 & 78.61 & right \\
+\hline
+29.5 & 24.525 & 79.48 & right \\
+\hline
+29.9 & 24.225 & 78.03 & right \\
+\hline
+28.95 & 26.125 & 84.13 & right \\
+\hline
+29.975 & 24.925 & 79.49 & right \\
+\hline
+29.675 & 24.1 & 78.16 & right \\
+\hline
+31.55 & 22.35 & 70.63 & right \\
+\hline
+30.825 & 23.5 & 74.64 & right \\
+\hline
+29.425 & 24.275 & 79.04 & right \\
+\hline
+29.275 & 24.45 & 79.74 & right \\
+\hline
+29.95 & 24.375 & 78.28 & right \\
+\hline
+30.25 & 24.55 & 78.12 & right \\
+\hline
+29.85 & 24.775 & 79.38 & right \\
+\hline
+28.95 & 26.125 & 84.13 & right \\
+\hline
+29.075 & 26.125 & 83.88 & right \\
+\hline
+29.2 & 25.65 & 82.59 & right \\
+\hline
+30.075 & 24.75 & 78.9 & right \\
+\hline
+29.9 & 24.35 & 78.32 & right \\
+\hline
+29.5 & 24.75 & 79.99 & right \\
+\hline
+29.575 & 24.65 & 79.62 & right \\
+\hline
+30.35 & 24.95 & 78.85 & right \\
+\hline
+\end{longtable}
+
+% END: Switch back to two-column format
+\twocolumn

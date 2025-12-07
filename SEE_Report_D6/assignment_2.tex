@@ -1,0 +1,259 @@
+
+% ============================================================
+% ASSIGNMENT 2
+% ============================================================
+\clearpage
+\part{Assignment 2: Manual Motion Observation}
+\setcounter{section}{0}
+
+\section{Introduction}
+This report presents the execution and results of Assignment 2, where we conducted manual measurements of our LEGO EV3 differential drive robot's end poses across three different motion types: straight, left arc, and right arc. Each motion was repeated 25 times to gather statistical data on the robot's behavior and positioning accuracy.
+
+\section{Program and Parameters}
+
+The robot was controlled using the provided EV3 control program with the following predefined parameters:
+\begin{itemize}
+    \item \textbf{Wheel diameter:} 5.30 cm
+    \item \textbf{Distance between wheels:} 12.00 cm
+    \item \textbf{Pen refill offset X:} 5.50 cm
+    \item \textbf{Pen refill offset Y:} 6.40 cm
+    \item \textbf{Motion types:} Left arc, Straight line, Right arc
+    \item \textbf{Trials per motion:} 25 trials each (75 total)
+\end{itemize}
+
+
+
+\section{Observations During Execution}
+
+During the experimental runs, the following observations were made:
+
+\begin{enumerate}
+    \item \textbf{Surface consistency:} The cardboard surface remained stable throughout all trials, providing a reliable measurement platform.
+    
+    \item \textbf{Marking precision:} The pen refill mechanism produced consistent marks with minimal ink spreading. The fine tip allowed for precise position recording.
+    
+    \item \textbf{Start position repeatability:} Using a fixed template ensured consistent starting positions across all trials, minimizing systematic errors.
+    
+    \item \textbf{Robot behavior variations:} Slight variations in end positions were observed, likely due to:
+    \begin{itemize}
+        \item Motor encoder resolution limitations
+        \item Battery voltage variations affecting motor performance
+        \item Minor inconsistencies in floor levelness
+    \end{itemize}
+
+
+    \item \textbf{Motion characteristics:}
+    \begin{itemize}
+        \item \textit{Straight motion:} Generally consistent forward movement.
+        \item \textit{Left arc:} Smooth curved trajectory with good repeatability
+        \item \textit{Right arc:} Similar behavior to left arc, symmetric results observed
+    \end{itemize}
+\end{enumerate}
+
+\section{Data Collection and Transformation}
+
+The experiment was conducted on a large cardboard sheet with a printed grid, which served as the global coordinate frame. A fixed starting pose was used for all trials to ensure consistency.
+
+For each of the 25 runs per motion (left arc, straight, right arc), the following procedure was followed:
+
+\begin{itemize}
+    \item The robot was placed at the designated origin (0, 0).
+    \item The corresponding motion program was executed.
+    \item Upon stopping, the two pen refills were used to mark the robot's position.
+    \item The coordinates of the two marks, $(X1, Y1)$ and $(X2, Y2)$, were recorded.
+\end{itemize}
+
+The raw marker coordinates were then transformed to calculate the final pose of the wheel axle center. This involved a three-step mathematical process:
+
+\begin{enumerate}
+    \item \textbf{Midpoint Calculation:} The midpoint of the pen refills, (Avg X, Avg Y), was found by averaging the coordinates:
+    \[
+    \text{X} = \frac{X1 + X2}{2}, \quad \text{Y} = \frac{Y1 + Y2}{2}
+    \]
+
+    \item \textbf{Orientation Calculation:} The final orientation, $\theta$, was calculated based on the position of the robot's axle center. By convention, an orientation of $\theta = 0°$ corresponds to the robot facing along the positive Y-axis.
+    
+    The radius of curvature is:
+    \[
+    r = \frac{X^2 + Y^2}{2X}
+    \]
+    
+    The orientation angle $\theta$ is defined as:
+    \[
+    \theta = \arctan{\frac{Y2 - Y1}{X2 - X1}}
+    \]
+    Finally, the orientation is rounded to two decimal places:
+    \[
+    \theta_{\text{final}} = \text{round}(\theta, 2)
+    \]
+\end{enumerate}
+
+
+\section{Data Visualization}
+
+The collected data has been visualized in three comprehensive plots showing the robot's behavior for each motion type. The visualizations include both the manually measured end poses and the complete paths recorded by the encoder data.
+
+\subsection{Manual Markings on Paper}
+
+Figure \ref{fig:markings} presents the markings of robot position.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{markings.jpeg}
+    \caption{Manual Measurements and markings for each run of robot}
+    \label{fig:markings}
+\end{figure}
+
+
+\subsection{End Poses Visualization}
+
+Figure \ref{fig:end_poses} shows the distribution of the robot's end poses for all three motion types from the manual measurements. This plot illustrates the spread and clustering of final positions, providing insight into the precision of the robot's motion control.
+\vspace{-20pt}
+\begin{figure}[H]
+    \centering
+    \captionsetup{skip=0pt}
+    \includegraphics[width=0.4\textwidth]{endposes.jpeg}
+    \caption{Robot end poses from manual measurements for straight, left arc, and right arc motions. Each point represents the compensated midpoint position between the two pen marks after refill offset correction.}
+    \label{fig:end_poses}
+\end{figure}
+
+
+\subsection{Complete Robot Paths}
+
+Figure \ref{fig:robot_paths} displays the complete trajectories of the robot as recorded by the encoder measurements. This visualization shows the continuous path taken by the robot from start to finish for all trials.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{robot_paths.jpeg}
+    \caption{Complete robot paths from encoder measurements showing the trajectories for all three motion types. The paths demonstrate the robot's movement behavior from the starting pose to the final positions.}
+    \label{fig:robot_paths}
+\end{figure}
+
+
+\subsection{Combined Visualization}
+
+Figure \ref{fig:combined_plot} presents a combined view that overlays the manually measured end poses with the encoder-based path data, allowing for direct comparison between the two measurement methods.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{combined_plot_mygroup.jpeg}
+    \caption{Combined visualization showing both encoder-based paths and manually measured end poses. This allows for comparison between the internal sensor data and external measurements.}
+    \label{fig:combined_plot}
+\end{figure}
+
+
+\subsection{Combined Visualization of All Groups}
+
+Figure \ref{fig:combined_plot_all_group} presents a combined view of data taken from other groups.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{manual_measurement_combined_group.jpeg}
+    \caption{Combined visualization showing manually measured end poses from other groups and comparing with our group.}
+    \label{fig:combined_plot_all_group}
+\end{figure}
+
+
+\subsection{Combined Visualization of Trajectories}
+
+Figure \ref{fig:trajectories} presents a combined view of data taken from other groups.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{trajectories.png}
+    \caption{Combined visualization showing encoder data from other groups and comparing with our group.}
+    \label{fig:trajectories}
+\end{figure}
+\clearpage
+
+\section{Manual Measurement Data}
+
+\begin{table}[htbp]
+\centering
+\Large
+\caption{Manual Measurements for Straight, Left Arc, and Right Arc Motions (All values in cm, orientation in degrees)}
+\label{tab:combined_large_bordered}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c||c|c|c|c||c|c|c|c|}
+\hline
+\multicolumn{4}{|c||}{\textbf{Straight Motion}} & \multicolumn{4}{c||}{\textbf{Left Arc Motion}} & \multicolumn{4}{c|}{\textbf{Right Arc Motion}} \\
+\hline
+\textbf{Trial} & \textbf{X} & \textbf{Y} & $\boldsymbol{\theta}$ & 
+\textbf{Trial} & \textbf{X} & \textbf{Y} & $\boldsymbol{\theta}$ &
+\textbf{Trial} & \textbf{X} & \textbf{Y} & $\boldsymbol{\theta}$ \\
+\hline
+1 & 47.03 & 0.30 & 0.00 & 1 & 31.45 & -22.75 & -62.10 & 1 & 32.65 & 25.15 & 62.61 \\
+2 & 45.87 & 0.25 & -0.59 & 2 & 31.65 & -23.60 & -62.59 & 2 & 31.90 & 23.35 & 56.48 \\
+3 & 45.54 & 0.25 & -2.36 & 3 & 31.85 & -23.65 & -64.29 & 3 & 31.60 & 22.30 & 55.98 \\
+4 & 47.01 & 0.25 & -1.18 & 4 & 31.20 & -22.80 & -55.98 & 4 & 31.00 & 23.70 & 56.98 \\
+5 & 45.67 & 0.40 & -1.19 & 5 & 31.05 & -23.00 & -56.65 & 5 & 31.60 & 23.40 & 56.98 \\
+6 & 45.94 & -0.25 & -1.18 & 6 & 31.90 & -23.40 & -56.98 & 6 & 31.95 & 22.40 & 55.65 \\
+7 & 47.61 & -0.35 & -0.59 & 7 & 31.20 & -24.50 & -58.63 & 7 & 31.70 & 23.35 & 57.48 \\
+8 & 47.50 & -0.50 & 0.00 & 8 & 31.85 & -23.25 & -57.15 & 8 & 31.35 & 23.30 & 56.31 \\
+9 & 47.25 & -0.40 & 0.60 & 9 & 31.70 & -23.10 & -55.98 & 9 & 31.70 & 23.20 & 59.04 \\
+10 & 46.52 & -0.20 & -0.60 & 10 & 31.95 & -23.20 & -57.30 & 10 & 32.30 & 27.15 & 60.00 \\
+11 & 46.71 & 0.25 & -1.18 & 11 & 32.20 & -23.90 & -56.98 & 11 & 32.00 & 23.95 & 66.10 \\
+12 & 48.88 & -0.55 & 1.21 & 12 & 32.20 & -23.65 & -60.18 & 12 & 33.25 & 24.00 & 56.31 \\
+13 & 48.61 & -0.55 & 1.77 & 13 & 32.30 & -23.65 & -56.48 & 13 & 32.60 & 24.60 & 57.62 \\
+14 & 46.73 & 0.10 & 0.00 & 14 & 32.35 & -23.75 & -62.57 & 14 & 28.70 & 23.95 & 57.80 \\
+15 & 46.50 & -0.40 & -0.61 & 15 & 32.10 & -24.80 & -58.63 & 15 & 31.65 & 22.90 & 56.31 \\
+16 & 46.63 & 0.85 & 0.00 & 16 & 32.00 & -24.35 & -58.74 & 16 & 32.20 & 23.65 & 56.48 \\
+17 & 45.93 & -0.50 & 0.60 & 17 & 31.75 & -24.10 & -58.31 & 17 & 31.65 & 23.10 & 58.31 \\
+18 & 46.84 & -0.50 & 1.19 & 18 & 31.70 & -24.15 & -58.12 & 18 & 32.70 & 23.55 & 56.48 \\
+19 & 45.50 & -0.65 & 1.21 & 19 & 32.55 & -23.65 & -56.80 & 19 & 32.70 & 23.55 & 56.48 \\
+20 & 47.81 & 0.30 & 0.00 & 20 & 32.10 & -23.75 & -56.48 & 20 & 32.15 & 24.45 & 59.44 \\
+21 & 46.32 & 0.70 & 0.58 & 21 & 32.20 & -25.40 & -58.63 & 21 & 32.45 & 23.55 & 56.80 \\
+22 & 48.14 & -0.55 & 1.77 & 22 & 32.20 & -23.65 & -60.18 & 22 & 32.25 & 25.35 & 57.53 \\
+23 & 48.01 & -0.35 & -0.59 & 23 & 33.20 & -23.95 & -56.14 & 23 & 31.60 & 24.70 & 58.63 \\
+24 & 46.67 & 0.25 & -2.36 & 24 & 31.85 & -24.25 & -57.80 & 24 & 31.85 & 24.90 & 61.66 \\
+25 & 47.06 & 0.30 & 0.00 & 25 & 32.00 & -23.00 & -55.30 & 25 & 32.40 & 23.80 & 57.62 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\newpage
+\clearpage
+\section{Comparison with Expectations}
+
+The observed behavior of the robot generally matches our expectations from Assignment 1:
+
+\begin{enumerate}
+    
+    \item \textbf{Motion repeatability:} All three motion types show relatively tight clustering of end poses, indicating good repeatability of the robot's motion control.
+    
+    \item \textbf{Systematic patterns:} The straight motion shows minimal lateral drift (mean X ≈ 0), while the left and right arcs show symmetric behavior with respect to the Y-axis, as expected.
+    
+    \item \textbf{Variation sources:} The spread in end positions aligns with anticipated error sources including encoder resolution, wheel slippage, and battery variations.
+\end{enumerate}
+
+\section{Data Transformation and Combined Dataset}
+
+Our data follows the standard coordinate convention agreed upon by all groups:
+\begin{itemize}
+    \item X-axis aligned with forward robot direction
+    \item Y-axis perpendicular (right-hand rule)
+    \item All positions transformed to represent the robot's axle center
+    \item All values rounded to 2 decimal places
+\end{itemize}
+
+
+\section{Conclusion}
+
+The experiment successfully captured 75 data points (25 trials × 3 motion types) documenting the robot's end pose behavior. The pen refill marking mechanism proved reliable and precise, and the observed motion patterns demonstrate good repeatability. The visualizations clearly show the distribution of end poses and provide insight into the robot's motion characteristics.
+
+The comparison between manually measured end poses and encoder-based trajectories reveals the strengths and limitations of both measurement approaches. The manual measurements provide ground truth data for the robot's final position, while the encoder data captures the complete motion trajectory.
+
+
+\section{Appendix: Video Documentation}
+
+Three video recordings were captured showing the robot's behavior during the experiment:
+\begin{itemize}
+    \item \texttt{straight\_motion.mp4} - \href{https://drive.google.com/file/d/1FgNvgfxEAJI85l1wr818Zc8Tj4JU2fJr/view?usp=drive_link}{Robot executing straight line motion}
+
+    \item \texttt{left\_motion.mp4} - 
+    \href{https://drive.google.com/file/d/1OQ2yL8q3jU4i1uQw93-rE6GVCyLhPzl7/view?usp=drive_link}{Robot executing left motion}
+
+    \item \texttt{right\_arc\_motion.mp4} - 
+    \href{https://drive.google.com/file/d/1vCvrGN6NnzbtScMS9WZb-VpXlUaAx0OY/view?usp=sharing}{Robot executing right arc motion}
+\end{itemize}

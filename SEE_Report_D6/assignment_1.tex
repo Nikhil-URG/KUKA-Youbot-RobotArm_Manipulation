@@ -1,0 +1,115 @@
+
+% ============================================================
+% ASSIGNMENT 1
+% ============================================================
+
+\part{Assignment 1: Measurement System Design}
+\setcounter{section}{0}
+
+\section{Robot and Measurement System}
+
+The robot used in this experiment is a \textbf{LEGO EV3 differential drive robot}, consisting of two main wheels on the same axle and a small supporting caster at the front. The task of the experiment is to measure the stop position of the robot after executing a predefined motion.
+
+In the initial design, a \textbf{lever and pencil nib mechanism} was used to mark the stop position. However, it was later replaced with a \textbf{pen refill-based marking system}, which makes the system more robust for rough terrain. A pen refill is directly mounted on both sides of the robot, allowing it to make a mark on the cardboard surface. This modification simplifies the setup and improves marking consistency.
+
+\begin{itemize}
+    \item The midpoint between the two pen marks corresponds approximately to the final position of the robot's wheel axle center.
+    \item The orientation $\theta$ can be estimated from the line connecting the left and right marks, since they reflect the alignment of the robot's axle.
+\end{itemize}
+
+\textbf{Reason for Two-Point Measurement:}  
+Two points are sufficient to define the robot's axle line and its midpoint, which directly correspond to the robot's final pose on the grid. Introducing a third point would substantially increase the measurement and data processing. Performing 25 trials for each of the three motion types and using three markers would expand this to 225 individual coordinate readings. Additionally, computing the centroid of a triangular configuration manually would complicate data handling and introduce more room for error. Therefore, the two-point setup achieves the necessary accuracy while keeping the experimental process straightforward and repeatable. The midpoint position and the orientation line ensure reliable results with minimal hardware.
+
+\section{Measurement Process}
+
+The process for carrying out the measurements is as follows:
+
+\begin{enumerate}
+    \item A large cardboard sheet with a printed or drawn grid is fixed to the working surface using tape, so it does not move during the experiment.
+    \item A clear origin is marked on the grid, including both position and orientation. To ensure repeatability, a simple placement template is used so the robot always starts from the same position and orientation.
+    \item The robot is placed at the start position and the program for the chosen motion (straight, left arc, or right arc) is executed.
+    \item When the robot comes to a stop, the pen refills on both sides can be rotated \ang{90} to avoid the stopper and pushed down simply to mark the spot, as shown in Figure~\ref{fig:pen_refill}. If both marks are recorded, their midpoint represents the final position $(x, y)$. The line through the marks gives the orientation $\theta$.
+    \item The $(x, y, \theta)$ values are measured relative to the origin on the grid and recorded in a results table.
+    \item The robot is reset to the origin and the process is repeated at least 25 times for each type of motion.
+\end{enumerate}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.55\textwidth]{1.jpeg}
+    \caption{Robot with lever system.}
+    \label{fig:lever_system}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.55\textwidth]{3.jpeg}
+    \caption{Robot with modified pen refill marking mechanism.}
+    \label{fig:pen_refill}
+\end{figure}
+
+\section{Expected Problems and Mitigations}
+
+During the experiment, several practical issues may occur:
+
+\begin{itemize}
+    \item \textbf{Ink spreading or uneven marking:} Refills may release excess ink or create faint marks.  
+    \textbf{Solution:} Use refills with consistent ink flow and test before trials.
+
+    \item \textbf{Mounting stability:} If the refill is loosely mounted, mark positions may vary.  
+    \textbf{Solution:} Tape the refill to reduce any gap and improve stability.
+
+    \item \textbf{Start placement variation:} Inconsistent starting positions can add systematic errors.  
+    \textbf{Solution:} Use a fixed template or taped outline for robot placement.
+
+    \item \textbf{Cardboard movement:} If the grid sheet shifts, all measurements are affected.  
+    \textbf{Solution:} Secure the sheet with tape to the surface.
+\end{itemize}
+
+\section{Jacobian Error Propagation}
+
+The propagation of uncertainty in the measured input coordinates requires the calculation of the Jacobian matrix \textbf{J}. The total input vector $\mathbf{x} = (x_{1,1}, x_{1,2}, x_{2,1}, x_{2,2})^T$ is composed of all four scalar variables representing the coordinates of the two pen marks. Since \textbf{F} is a vector-valued function with three outputs (final pose: $x, y, \theta$) and four inputs, the resulting Jacobian matrix \textbf{J} is a $3 \times 4$ matrix.
+
+For the orientation $\theta$, let the measured coordinates be
+\[
+\mathbf{p} = \begin{bmatrix} x_L & y_L & x_R & y_R \end{bmatrix}^\top,
+\]
+where the robot orientation is computed as
+\[
+\theta(\mathbf{p}) = \operatorname{atan2}(y_R - y_L, x_R - x_L).
+\]
+
+The Jacobian for orientation is given by:
+\[
+\mathbf{J}_\theta = \frac{\partial \mathbf{F}}{\partial \mathbf{x}} = 
+\begin{pmatrix}
+\frac{\partial F_1}{\partial x_{1,1}} & \frac{\partial F_1}{\partial x_{1,2}} & \frac{\partial F_1}{\partial x_{2,1}} & \frac{\partial F_1}{\partial x_{2,2}} \\
+\frac{\partial F_2}{\partial x_{1,1}} & \frac{\partial F_2}{\partial x_{1,2}} & \frac{\partial F_2}{\partial x_{2,1}} & \frac{\partial F_2}{\partial x_{2,2}} \\
+\frac{\partial F_3}{\partial x_{1,1}} & \frac{\partial F_3}{\partial x_{1,2}} & \frac{\partial F_3}{\partial x_{2,1}} & \frac{\partial F_3}{\partial x_{2,2}}
+\end{pmatrix}
+\]
+
+For the third row (orientation), with $d = (x_{1,1} - x_{2,1})^2 + (x_{1,2} - x_{2,2})^2$:
+\[
+= \begin{pmatrix}
+\frac{1}{2} & 0 & \frac{1}{2} & 0 \\
+0 & \frac{1}{2} & 0 & \frac{1}{2} \\
+\frac{x_{1,2}-x_{2,2}}{d} & \frac{x_{2,1}-x_{1,1}}{d} & \frac{x_{2,2}-x_{1,2}}{d} & \frac{x_{1,1}-x_{2,1}}{d}
+\end{pmatrix}
+\]
+
+The covariance matrix of the calculated end pose $\mathbf{C}_F$ is then determined from the input covariance matrix $\mathbf{C}_x$ via the generalized error propagation formula:
+\begin{equation}
+\mathbf{C}_F = \mathbf{J}\mathbf{C}_x\mathbf{J}^T,
+\end{equation}
+where $\mathbf{C}_x$ is the $4 \times 4$ covariance matrix of the input variables $(x_{1,1}, x_{1,2}, x_{2,1}, x_{2,2})$.
+
+Using the reported position uncertainty $\sigma_{\text{pos}} \approx 0.36$ mm and wheel-axle separation $L \approx 96$ mm, the orientation uncertainty is approximately:
+\[
+\boxed{\sigma_\theta \approx 0.0053\ \text{rad} \approx 0.30^\circ}
+\]
+
+\section{Conclusion}
+
+This measurement system provides a simple, reliable, and precise method for determining the robot's final position and orientation. The direct contact of the refill with the surface ensures consistent marking with minimal error, reducing variability in results. Its compact design minimizes mechanical complexity and allows easy alignment on both sides of the robot. Due to the fine tip of the pen refill, the marking precision is high, resulting in a position uncertainty of approximately $\pm 0.4$ mm and an orientation uncertainty of about $\pm 0.2^{\circ}$.
+
+Among the possible configurations, the two-point method proved to be the most straightforward and practical choice, as it provides all required position and orientation information without unnecessary complexity or excessive data recording.
