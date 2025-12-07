@@ -8,7 +8,7 @@
 
 \section{Introduction}
 
-This report presents the statistical evaluation of the KUKA youBot arm's performance based on the combined preprocessed data from all groups. The analysis focuses on assessing the accuracy and precision of the robot arm, checking if the final object poses follow a Gaussian distribution, and evaluating the effects of object size and placing pose on these metrics. The data includes three object sizes (small, medium, large), allowing comparisons across sizes and directions (left, straight, right).
+This report presents the statistical evaluation of the KUKA youBot arm's performance based on the combined preprocessed data from all groups. The analysis focuses on finding the accuracy and precision of the robot arm, checking if the final object poses follow a Gaussian distribution, and evaluating the effects of object size and placing pose on these metrics. The data includes three object sizes (small, medium, large), allowing comparisons across sizes and directions (left, straight, right).
 
 \section{Data Transformation}
 
@@ -16,9 +16,11 @@ To align the coordinate frames between the robot (YouBot) and the external senso
 
 This transformation was implemented in the Python scripts using pandas operations on the matched data: \texttt{matched['x\_youbot'] += offset\_x; matched['y\_youbot'] += offset\_y}. The purpose is to align the frames so that positions from both sensors can be directly compared in the same coordinate system. This has implications for the analysis, as it allows meaningful computation of distances and variances between internal (YouBot) and external (OptiTrack) measurements, improving the assessment of robot accuracy and precision.
 
+script used : \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter}
+
 \section{Data Analysis Methodology}
 
-The analysis was performed using Python scripts: \texttt{transformed\_data\_plotter.py} for combined plots and statistical analysis, and \texttt{separate\_plots\_generator.py} for generating separate scatter plots. The key steps include:
+The analysis was performed using Python scripts: \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter} and \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/separate_plots_generator.py}{Seperate Plot Generator} for generating separate scatter plots. The key steps include:
 
 \begin{itemize}
     \item Loading OptiTrack (external) and YouBot (internal) data from respective folders.
@@ -27,8 +29,8 @@ The analysis was performed using Python scripts: \texttt{transformed\_data\_plot
     \item Separating internal (YouBot, transformed) and external (OptiTrack) poses.
     \item Computing accuracy as the mean L2 norm distance between YouBot and OptiTrack positions for each group.
     \item Computing precision as the mean standard deviation of OptiTrack x and y coordinates.
-    \item Generating scatter plots for OptiTrack data, YouBot data, and combined transformed data in \texttt{report\_plots}.
-    \item Generating combined plots with arrows for orientation in \texttt{transformed\_plots}.
+    \item Generating scatter plots for OptiTrack data, YouBot data, and combined transformed data.
+    \item Generating combined plots with arrows for orientation.
 \end{itemize}
 
 \section{Accuracy and Precision Results}
@@ -47,7 +49,7 @@ The precision values show notable differences across directions, with straight d
 
 \section{Software Used}
 
-The analysis was performed using Python with libraries: pandas, numpy, matplotlib. The scripts are \texttt{transformed\_data\_plotter.py} for combined analysis and plots, and \texttt{separate\_plots\_generator.py} for individual scatter plots.
+The analysis was performed using Python with libraries: pandas, numpy, matplotlib. The scripts are \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter} for combined analysis and plots, and \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/separate_plots_generator.py}{Seperate Plot Generator} for individual scatter plots.
 
 \section{Results Table}
 
@@ -79,21 +81,21 @@ The following figures show scatter plots for OptiTrack data, YouBot data, and co
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/optitrack_large.png}
+\includegraphics[width=0.4\textwidth]{images/optitrack_large.png}
 \caption{OptiTrack Data Scatter Plot for Large Object}
 \label{fig:optitrack_large}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/optitrack_medium.png}
+\includegraphics[width=0.4\textwidth]{images/optitrack_medium.png}
 \caption{OptiTrack Data Scatter Plot for Medium Object}
 \label{fig:optitrack_medium}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/optitrack_small.png}
+\includegraphics[width=0.4\textwidth]{images/optitrack_small.png}
 \caption{OptiTrack Data Scatter Plot for Small Object}
 \label{fig:optitrack_small}
 \end{figure}
@@ -102,21 +104,21 @@ The following figures show scatter plots for OptiTrack data, YouBot data, and co
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/youbot_large.png}
+\includegraphics[width=0.4\textwidth]{images/youbot_large.png}
 \caption{YouBot Data Scatter Plot for Large Object}
 \label{fig:youbot_large}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/youbot_medium.png}
+\includegraphics[width=0.4\textwidth]{images/youbot_medium.png}
 \caption{YouBot Data Scatter Plot for Medium Object}
 \label{fig:youbot_medium}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/youbot_small.png}
+\includegraphics[width=0.4\textwidth]{images/youbot_small.png}
 \caption{YouBot Data Scatter Plot for Small Object}
 \label{fig:youbot_small}
 \end{figure}
@@ -125,25 +127,31 @@ The following figures show scatter plots for OptiTrack data, YouBot data, and co
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/combined_large.png}
+\includegraphics[width=0.4\textwidth]{images/combined_large1.png}
 \caption{Combined Transformed Data Scatter Plot for Large Object}
 \label{fig:combined_large}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/combined_medium.png}
+\includegraphics[width=0.4\textwidth]{images/combined_medium1.png}
 \caption{Combined Transformed Data Scatter Plot for Medium Object}
 \label{fig:combined_medium}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\textwidth]{images/combined_small.png}
+\includegraphics[width=0.4\textwidth]{images/combined_small1.png}
 \caption{Combined Transformed Data Scatter Plot for Small Object}
 \label{fig:combined_small}
 \end{figure}
 
+\newpage
+
 \section{Conclusion}
 
 After transforming YouBot coordinates to the OptiTrack frame, the KUKA youBot arm demonstrates accuracy ranging from 41.75 to 61.74 cm across object sizes and directions. Precision is high, with standard deviations below 0.14 cm for OptiTrack measurements. Smaller objects show better accuracy, and straight directions exhibit higher precision than lateral movements. The coordinate alignment enables direct comparison of internal and external measurements, providing insights into robot performance for manipulation tasks.
+
+\section{Raw Data and Project Scripts}
+
+Can be found on Github : \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/tree/Exp6_results}{Project Link}

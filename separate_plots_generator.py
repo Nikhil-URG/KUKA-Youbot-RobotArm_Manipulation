@@ -118,7 +118,7 @@ for size in sorted(matched['size'].unique()):
     plt.xlabel("X [cm]", fontsize=14)
     plt.ylabel("Y – Forward direction [cm]", fontsize=14)
     plt.title(f"OptiTrack Data Scatter Plot\n{size.capitalize()} Object – All Directions\n"
-             f"({len(matched[matched['size'] == size])} trials)", fontsize=16, pad=20)
+             , fontsize=16, pad=20)
     plt.grid(True, alpha=0.3)
     plt.axis('equal')
     plt.legend(fontsize=12, loc='upper left')
@@ -141,7 +141,7 @@ for size in sorted(matched['size'].unique()):
     plt.xlabel("X [cm]", fontsize=14)
     plt.ylabel("Y – Forward direction [cm]", fontsize=14)
     plt.title(f"YouBot Data Scatter Plot\n{size.capitalize()} Object – All Directions\n"
-             f"({len(matched[matched['size'] == size])} trials)", fontsize=16, pad=20)
+             , fontsize=16, pad=20)
     plt.grid(True, alpha=0.3)
     plt.axis('equal')
     plt.legend(fontsize=12, loc='upper left')
@@ -180,7 +180,7 @@ for size in sorted(matched['size'].unique()):
     plt.xlabel("X [cm]", fontsize=14)
     plt.ylabel("Y – Forward direction [cm]", fontsize=14)
     plt.title(f"Combined Transformed Data Scatter Plot\n(YouBot Transformed to OptiTrack Frame)\n{size.capitalize()} Object – All Directions\n"
-             f"({len(matched[matched['size'] == size])} trials)", fontsize=16, pad=20)
+             , fontsize=16, pad=20)
     plt.grid(True, alpha=0.3)
     plt.axis('equal')
     plt.legend(fontsize=12, loc='upper left')
