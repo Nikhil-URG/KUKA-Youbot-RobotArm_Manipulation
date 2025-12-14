@@ -3,7 +3,7 @@
 % ============================================================
 
 \clearpage
-\part{Assignment 6: Statistical Evaluation of the Experiment}
+\textbf{Assignment 6: Statistical Evaluation of the Experiment}
 \setcounter{section}{0}
 
 \section{Introduction}
@@ -14,64 +14,160 @@ This report presents the statistical evaluation of the KUKA youBot arm's perform
 
 To align the coordinate frames between the robot (YouBot) and the external sensor (OptiTrack), a coordinate transformation was applied. The world origin [0, 0, 0] in the robot frame corresponds to the point [-212.40, 76.17, 103.15] in the OptiTrack frame. To transform YouBot coordinates (robot frame) to the OptiTrack frame for alignment, the offset vector [-212.40, 76.17, 103.15] was added to the YouBot x and y positions. The z-coordinate offset is noted but not used in the 2D plotting and analysis.
 
-This transformation was implemented in the Python scripts using pandas operations on the matched data: \texttt{matched['x\_youbot'] += offset\_x; matched['y\_youbot'] += offset\_y}. The purpose is to align the frames so that positions from both sensors can be directly compared in the same coordinate system. This has implications for the analysis, as it allows meaningful computation of distances and variances between internal (YouBot) and external (OptiTrack) measurements, improving the assessment of robot accuracy and precision.
+This transformation was implemented in the Python scripts using pandas operations on the matched data. The purpose is to align the frames so that positions from both sensors can be directly compared in the same coordinate system. This has implications for the analysis, as it allows meaningful computation of distances and variances between internal (YouBot) and external (OptiTrack) measurements, improving the assessment of robot accuracy and precision.
 
 script used : \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter}
 
 \section{Data Analysis Methodology}
 
-The analysis was performed using Python scripts: \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter} and \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/separate_plots_generator.py}{Seperate Plot Generator} for generating separate scatter plots. The key steps include:
+The key steps of performing the analysis are:
 
 \begin{itemize}
     \item Loading OptiTrack (external) and YouBot (internal) data from respective folders.
-    \item Merging data based on timestamps, sizes, and directions.
-    \item Applying coordinate transformation to YouBot data to align with OptiTrack frame (as described in Section 3).
+    \item Segregate data, based on timestamps, sizes, and directions.
+    \item Applying coordinate transformation to YouBot data to align with OptiTrack frame (as described in Section II).
     \item Separating internal (YouBot, transformed) and external (OptiTrack) poses.
     \item Computing accuracy as the mean L2 norm distance between YouBot and OptiTrack positions for each group.
-    \item Computing precision as the mean standard deviation of OptiTrack x and y coordinates.
+    \item Computing precision as the mean standard deviation of YouBot x and y coordinates.
     \item Generating scatter plots for OptiTrack data, YouBot data, and combined transformed data.
     \item Generating combined plots with arrows for orientation.
 \end{itemize}
+The analysis was performed using Python scripts: \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter} and \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/separate_plots_generator.py}{Seperate Plot Generator} for generating separate scatter plots. 
 
 \section{Accuracy and Precision Results}
 
-After applying the coordinate transformation to align YouBot data with the OptiTrack frame, the accuracy (mean L2 distance between transformed YouBot and OptiTrack positions) ranges from 41.75 to 61.74 cm across sizes and directions. The precision (mean standard deviation of OptiTrack positions) ranges from 0.01 to 0.14 cm.
+After applying the coordinate transformation to align YouBot data with the OptiTrack frame, small objects show average positioning accuracy of 32.31 cm, while medium objects show 29.04 cm and large objects show 29.22 cm. The precision (mean standard deviation of OptiTrack positions) ranges from 0.00 to 1.18 cm.
 
-The OptiTrack positions show low variance, indicating high precision in the external measurements. Comparisons across object sizes show that accuracy improves slightly for smaller objects, while precision is generally consistent but varies by direction.
+The OptiTrack positions show low variance, indicating high precision in the external measurements. Comparisons across object sizes show that accuracy improves slightly for smaller objects, while precision is generally consistent but varies by direction. This discrepancy is seen because the gripping point for small object is almost at it's center of gravity, hence when small object is placed by the end-effector there is very little wobble but when it comes to large or medium sized object, there is a significant wobble causing this inaccuracy with larger objects.
 
 \section{Effects of Size and Position}
 
-The data includes three object sizes (small, medium, large), allowing analysis of size effects. Accuracy tends to be higher (better) for smaller objects, with small objects showing the lowest mean errors (41.75-55.78 cm) compared to large objects (48.53-61.74 cm). Precision varies by direction, with straight directions generally showing higher precision (lower std dev) than left or right. Positional effects are evident, with left and right directions showing higher variability in x-coordinates compared to straight.
+The data includes three object sizes (small, medium, large), allowing analysis of size effects. Small objects show average positioning offsets of 32.31 cm, compared to 29.04 cm for medium objects and 29.22 cm for large objects. Precision varies by direction, with straight directions generally showing higher precision (lower standard deviation) than left or right. Positional effects are evident, with left and right directions showing higher variability in x-coordinates compared to straight.
 
 \section{Statistical Significance}
 
 The precision values show notable differences across directions, with straight directions exhibiting lower standard deviations (higher precision) compared to left and right. Size effects are present, with small objects showing the best accuracy. These differences suggest that both object size and placement direction influence robot performance.
 
+
+\section{Gaussian Distribution Analysis}
+
+To determine if the final object poses follow a Gaussian distribution, histograms were generated for X and Y position coordinates for each condition. Gaussian fits were applied, and p-values were analysed.
+
+The analysis shows that Youbot data exhibits zero variance (deterministic positions), while OptiTrack data shows varying degrees of normality depending on the condition.
+
+\subsection{Guassian Analysis Plots}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{SEE_Report_D6/images/left_guassian.jpeg}
+\caption{Guassian Fit for Opti Track data - Left}
+\label{fig:optitrack_guassian}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{SEE_Report_D6/images/right_guassian.jpeg}
+\caption{Guassian Fit for Opti Track data - Right}
+\label{fig:oguassian2}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{SEE_Report_D6/images/straight_guassian.jpeg}
+\caption{Guassian Fit for Opti Track data - Straight}
+\label{fig:guassian3}
+\end{figure}
+
+
+\section{PCA Analysis}
+
+Principal Component Analysis (PCA) was performed on the position data to identify the main components of variation in the robot's positioning accuracy.
+
+\subsection{PCA Plots}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{SEE_Report_D6/images/left_pca.jpeg}
+\caption{PCA for Opti Track data - Left}
+\label{fig:pca1}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{SEE_Report_D6/images/right_pca.jpeg}
+\caption{PCA for Opti Track data - Right}
+\label{fig:pca2}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{SEE_Report_D6/images/straight_pca.jpeg}
+\caption{PCA for Opti Track data - Straight}
+\label{fig:pca3}
+\end{figure}
+
+\section{Eigen Values from PCA}
+
+Direction: Left
+  Eigenvalues: [2.9166509  0.56509067]
+
+  
+  Principal Vector: [ 0.0797384  -0.99681582]
+
+Direction: Right
+  Eigenvalues: [2.98700936 0.51218081]
+
+  
+  Principal Vector: [ 0.89522573 -0.44561294]
+
+Direction: Straight
+  Eigenvalues: [2.65689723 0.58340185]
+
+  
+  Principal Vector: [ 0.5214046  -0.85330958]
+
+\section{Levene’s test}
+
+A Levene’s test was conducted to evaluate the effects of object size and placing pose on the robot's precision (variance in final position).
+
+\textbf{Effect of Size:} The test yielded a p-value of 0.282, indicating no statistically significant difference in precision across object sizes. We conclude that the mass/shape of the object does not significantly impact the robot's repeatability.
+
+Effect of Pose: The test yielded a p-value of $2.66 \times 10^{-19}$, indicating a highly significant difference. This suggests that the robot's precision is heavily dependent on the trajectory and final arm configuration (Left, Right, or Straight).
+
+
+
+\textbf{Levene's test results}
+
+
+
+ STATISTICAL SIGNIFICANCE (Levene's Test)
+
+Hypothesis: Variances (Precision) are equal across groups.
+
+1. Effect of OBJECT SIZE (Large, Medium, Small):
+   Levene Statistic = 1.2687
+   P-value          = 2.8170e-01
+    RESULT: NOT Significant. Precision is consistent across sizes.
+
+2. Effect of PLACING POSE (Left, Right, Straight):
+   Levene Statistic = 44.8789
+   P-value          = 2.6602e-19
+    RESULT: SIGNIFICANT. Changing direction AFFECTS precision.
+
+COMPARISON OF EFFECTS:
+Placing POSE (Stat=44.88) has a larger effect on variance than Size (Stat=1.27).
+
+
+
+\textbf{Conclusion of the test:} The change in Placing Pose has a significantly larger effect on the robot's performance along with the change in Object Size.
+
 \section{Software Used}
 
 The analysis was performed using Python with libraries: pandas, numpy, matplotlib. The scripts are \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/transformed_data_plotter.py}{Transformed data plotter} for combined analysis and plots, and \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/blob/Exp6_results/separate_plots_generator.py}{Seperate Plot Generator} for individual scatter plots.
 
-\section{Results Table}
 
-\begin{table}[h!]
-\centering
-\caption{Statistical Parameters for Robot Behavior (YouBot Transformed to OptiTrack Frame)}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-Size & Direction & Accuracy (cm) & Precision X (cm) & Precision Y (cm) \\
-\hline
-Small & Left & 45.42 & 0.14 & 0.14 \\
-Small & Right & 55.78 & 0.02 & 0.02 \\
-Small & Straight & 41.75 & 0.06 & 0.06 \\
-Medium & Left & 51.04 & 0.03 & 0.03 \\
-Medium & Right & 59.94 & 0.02 & 0.02 \\
-Medium & Straight & 46.72 & 0.01 & 0.01 \\
-Large & Left & 52.96 & 0.04 & 0.04 \\
-Large & Right & 61.74 & 0.02 & 0.02 \\
-Large & Straight & 48.53 & 0.03 & 0.03 \\
-\hline
-\end{tabular}
-\end{table}
+
+
 
 \section{Data Visualization}
 
@@ -150,8 +246,48 @@ The following figures show scatter plots for OptiTrack data, YouBot data, and co
 
 \section{Conclusion}
 
-After transforming YouBot coordinates to the OptiTrack frame, the KUKA youBot arm demonstrates accuracy ranging from 41.75 to 61.74 cm across object sizes and directions. Precision is high, with standard deviations below 0.14 cm for OptiTrack measurements. Smaller objects show better accuracy, and straight directions exhibit higher precision than lateral movements. The coordinate alignment enables direct comparison of internal and external measurements, providing insights into robot performance for manipulation tasks.
+After transforming YouBot coordinates to the OptiTrack frame, the KUKA youBot arm demonstrates small objects showing average positioning accuracy of 32.31 cm, medium objects 29.04 cm, and large objects 29.22 cm. Precision ranges from 0.00 to 1.18 cm for OptiTrack measurements. Straight directions exhibit higher precision than lateral movements. The coordinate alignment enables direct comparison of internal and external measurements, providing insights into robot performance for manipulation tasks.
 
 \section{Raw Data and Project Scripts}
 
 Can be found on Github : \href{https://github.com/Nikhil-URG/KUKA-Youbot-RobotArm_Manipulation/tree/Exp6_results}{Project Link}
+
+
+\section{Results Table}
+
+\begin{table*}[t!]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+No & Size & Direction & Rand. Var. & Mean (cm) & Variance (cm²) & Accuracy (cm) & p value & Null Hypothesis \\ \hline
+1 & Large & Left & X & 16.20 & 0.09 & 26.87 & 0.00 & Reject \\
+2 & Large & Left & Y & -12.10 & 0.04 & 26.87 & 0.00 & Reject \\
+3 & Large & Left & Theta & -1.79 & 0.57 & NA & 0.00 & Reject \\
+4 & Large & Right & X & -23.00 & 0.00 & 31.60 & 0.00 & Reject \\
+5 & Large & Right & Y & -17.90 & 0.21 & 31.60 & 0.00 & Reject \\
+6 & Large & Right & Theta & -0.89 & 2.12 & NA & 0.00 & Reject \\
+7 & Large & Straight & X & -2.40 & 0.12 & 29.18 & 0.00 & Reject \\
+8 & Large & Straight & Y & -5.50 & 0.01 & 29.18 & 0.02 & Reject \\
+9 & Large & Straight & Theta & -1.94 & 0.52 & NA & 0.00 & Reject \\
+10 & Medium & Left & X & 16.60 & 0.01 & 26.39 & 0.00 & Reject \\
+11 & Medium & Left & Y & -12.50 & 0.23 & 26.39 & 0.00 & Reject \\
+12 & Medium & Left & Theta & -1.20 & 0.60 & NA & 0.00 & Reject \\
+13 & Medium & Right & X & -23.10 & 0.10 & 31.72 & 0.00 & Reject \\
+14 & Medium & Right & Y & -17.70 & 0.03 & 31.72 & 0.00 & Reject \\
+15 & Medium & Right & Theta & 0.07 & 0.45 & NA & 0.00 & Reject \\
+16 & Medium & Straight & X & -2.20 & 0.07 & 29.01 & 0.00 & Reject \\
+17 & Medium & Straight & Y & -5.70 & 0.14 & 29.01 & 0.00 & Reject \\
+18 & Medium & Straight & Theta & -0.74 & 0.60 & NA & 0.00 & Reject \\
+19 & Small & Left & X & 16.60 & 0.03 & 29.63 & 0.00 & Reject \\
+20 & Small & Left & Y & -8.90 & 0.00 & 29.63 & 0.00 & Reject \\
+21 & Small & Left & Theta & -1.91 & 0.00 & NA & 0.00 & Reject \\
+22 & Small & Right & X & -26.20 & 0.02 & 34.81 & 0.00 & Reject \\
+23 & Small & Right & Y & -15.70 & 0.01 & 34.81 & 0.00 & Reject \\
+24 & Small & Right & Theta & -0.97 & 0.00 & NA & 0.00 & Reject \\
+25 & Small & Straight & X & -3.70 & 0.02 & 32.48 & 0.00 & Reject \\
+26 & Small & Straight & Y & -2.30 & 0.01 & 32.48 & 0.00 & Reject \\
+27 & Small & Straight & Theta & -1.48 & 0.00 & NA & 0.00 & Reject \\ \hline
+\end{tabular}
+\end{table*}
